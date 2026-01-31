@@ -1,11 +1,21 @@
 # NudgeOSD | ![License](https://img.shields.io/badge/License-BSD--3--Clause-blue)
 
-A QML-based on-screen display for keyboard shortcuts and system notifications designed for Wayland compositors. Built with **[MauiKit](https://mauikit.org/)** and LayerShell-Qt.
+A QML-based on-screen display for keyboard shortcuts and system notifications designed for Wayland compositors.
+
+![NudgeOSD](https://nxos.org/wp-content/uploads/2026/01/screenshot-20260131-120609.png)
+> NudgeOSD, a QML-based on-screen display. Built with **[MauiKit](https://mauikit.org/)** and LayerShell-Qt.
+
+
+## Features
+
+- Supports using either the system icon theme or Nerd Fonts to display the icons.
+- Supports standard `.colors` schemes (KDE style).
+- Direct D-Bus integration.
+- Built with `x86-64-v3` optimizations for modern hardware.
+
+## Supported D-Bus commands
 
 The application will start in the background and listen for DBus commands.
-
-
-## Supported Notifications
 
 | Type | Icon Mapping | Description |
 |------|-------------|-------------|
