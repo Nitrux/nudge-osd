@@ -12,8 +12,8 @@ int main(int argc, char *argv[]) {
     QSurfaceFormat::setDefaultFormat(format);
 
     QGuiApplication app(argc, argv);
-    app.setApplicationName("nudgeosd");
-    app.setDesktopFileName("nudgeosd");
+    app.setApplicationName("nudge-osd");
+    app.setDesktopFileName("nudge-osd");
 
     // Initialize MauiKit - this loads the MauiKit plugin and makes Maui.Icon available!
     MauiApp::instance();

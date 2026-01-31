@@ -42,7 +42,7 @@ sources = [
 ]
 
 # Executable
-executable('nudgeosd',
+executable('nudge-osd',
   sources,
   dependencies: [dep_qt6, dep_maui, dep_layer_shell, dep_kf6coreaddons],
   cpp_args: cpp_args,
