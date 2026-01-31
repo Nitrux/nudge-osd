@@ -12,16 +12,31 @@ A QML-based on-screen display for keyboard shortcuts and system notifications de
 - Direct D-Bus integration. The application will start in the background and listen for DBus commands.
 - Built with `x86-64-v3` optimizations for modern hardware.
 
+## Requirements
+
+- Nitrux 5.0.0 and newer.
+
+### Runtime Requirements
+
+```
+mauikit (>= 4.0.2)
+qt6 (>= 6.9.2)
+wayland
+kf6-coreaddons (>= 6.20.0)
+wireplumber
+brightnessctl
+```
+
 ## Usage
 
 ```
 nudge-osd                           Daemon mode. Uses system icons.
-          --emoji                   Daemon mode. Uses Nerd Font glyphs
+          --emoji                   Daemon mode. Uses Nerd Font glyphs.
 
-nudge-osd --volume-down [amount]
+nudge-osd --volume-down             Adjust volume (up, down or mute).
           --volume-up
           --volume-mute
-          --brightness-up
+          --brightness-up           Adjust brightness (up or down).
           --brightness-down
 ```
 

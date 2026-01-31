@@ -59,7 +59,7 @@ Priority: optional
 Architecture: $ARCHITECTURE
 Maintainer: $MAINTAINER
 Description: $DESCRIPTION
-Depends: libqt6core6t64, libqt6gui6, libqt6qml6, libqt6quick6, libqt6dbus6, libqt6quickcontrols2-6, libkf6coreaddons6, mauikit (>= 4.0.2), liblayershellqtinterface6, fonts-nitrux-desktop
+Depends: libqt6core6t64, libqt6gui6, libqt6qml6, libqt6quick6, libqt6dbus6, libqt6quickcontrols2-6, libkf6coreaddons6, mauikit (>= 4.0.2), liblayershellqtinterface6, fonts-nitrux-desktop, wireplumber, brightnessctl
 EOF
 
 
