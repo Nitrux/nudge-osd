@@ -101,6 +101,7 @@ Window {
                 anchors.leftMargin: 5
                 anchors.verticalCenter: parent.verticalCenter
 
+                // System theme icons
                 Maui.Icon {
                     anchors.centerIn: parent
                     width: 20
@@ -108,6 +109,36 @@ Window {
                     source: controller.icon
                     color: "#ffffff"
                     isMask: true
+                    visible: !controller.useNerdFont
+                }
+
+                // Nerd Font glyphs
+                Label {
+                    anchors.centerIn: parent
+                    font.family: "Symbols Nerd Font"
+                    font.pixelSize: 18
+                    color: "#ffffff"
+                    visible: controller.useNerdFont
+                    text: {
+                        var iconName = controller.icon
+                        // Nerd Font glyphs
+                        if (iconName.indexOf("audio-volume-muted") >= 0) return "\uf6a9"  //
+                        if (iconName.indexOf("audio-volume-low") >= 0) return "\uf027"   //
+                        if (iconName.indexOf("audio-volume-medium") >= 0) return "\uf027" //
+                        if (iconName.indexOf("audio-volume-high") >= 0) return "\uf028"  //
+                        if (iconName.indexOf("brightness-low") >= 0) return "\uf185"     //
+                        if (iconName.indexOf("brightness-medium") >= 0) return "\uf185"  //
+                        if (iconName.indexOf("brightness-high") >= 0) return "\uf185"    //
+                        if (iconName.indexOf("keyboard-brightness") >= 0) return "\uf11c" //
+                        if (iconName.indexOf("microphone") >= 0) return "\uf130"         //
+                        if (iconName.indexOf("battery") >= 0) return "\uf240"            //
+                        if (iconName.indexOf("media-playback-start") >= 0) return "\uf04b" //
+                        if (iconName.indexOf("media-playback-pause") >= 0) return "\uf04c" //
+                        if (iconName.indexOf("media-playback-stop") >= 0) return "\uf04d"  //
+                        if (iconName.indexOf("media-skip-forward") >= 0) return "\uf051"   //
+                        if (iconName.indexOf("media-skip-backward") >= 0) return "\uf048"  //
+                        return "\uf028" // Default volume icon
+                    }
                 }
             }
 
