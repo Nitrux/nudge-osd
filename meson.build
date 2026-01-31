@@ -13,6 +13,7 @@ endif
 qt6 = import('qt6')
 dep_qt6 = dependency('qt6', modules: ['Core', 'Gui', 'Qml', 'Quick', 'QuickControls2', 'DBus'])
 dep_maui = dependency('MauiKit4')
+dep_kf6coreaddons = dependency('KF6CoreAddons')
 
 # Try multiple names for LayerShellQt
 dep_layer_shell = dependency('LayerShellQt', required: false)
@@ -43,7 +44,7 @@ sources = [
 # Executable
 executable('nudgeosd',
   sources,
-  dependencies: [dep_qt6, dep_maui, dep_layer_shell],
+  dependencies: [dep_qt6, dep_maui, dep_layer_shell, dep_kf6coreaddons],
   cpp_args: cpp_args,
   install: true
 )

@@ -3,6 +3,7 @@
 #include <QQmlContext>
 #include <QTimer>
 #include <QSurfaceFormat>
+#include <MauiKit4/Core/mauiapp.h>
 #include "Controller.h"
 
 int main(int argc, char *argv[]) {
@@ -13,6 +14,9 @@ int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
     app.setApplicationName("nudgeosd");
     app.setDesktopFileName("nudgeosd");
+
+    // Initialize MauiKit - this loads the MauiKit plugin and makes Maui.Icon available!
+    MauiApp::instance();
 
     // Create the Controller but don't register DBus yet
     Controller controller;
