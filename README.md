@@ -5,30 +5,25 @@ A QML-based on-screen display for keyboard shortcuts and system notifications de
 ![NudgeOSD](https://nxos.org/wp-content/uploads/2026/01/screenshot-20260131-120609.png)
 > NudgeOSD, a QML-based on-screen display. Built with **[MauiKit](https://mauikit.org/)** and LayerShell-Qt.
 
-
 ## Features
 
 - Supports using either the system icon theme or Nerd Fonts to display the icons.
 - Supports standard `.colors` schemes (KDE style).
-- Direct D-Bus integration.
+- Direct D-Bus integration. The application will start in the background and listen for DBus commands.
 - Built with `x86-64-v3` optimizations for modern hardware.
 
-## Supported D-Bus commands
+## Usage
 
-The application will start in the background and listen for DBus commands.
+```
+nudge-osd                           Daemon mode. Uses system icons.
+          --emoji                   Daemon mode. Uses Nerd Font glyphs
 
-| Type | Icon Mapping | Description |
-|------|-------------|-------------|
-| `volume` | audio-volume-{muted,low,medium,high} | System volume |
-| `brightness` | brightness-{low,medium,high} | Display brightness |
-| `keyboard-brightness` | keyboard-brightness-{off,low,high} | Keyboard backlight |
-| `microphone` | microphone-sensitivity-{muted,low,high} | Microphone level |
-| `battery` | battery-{caution,low,good,full} | Battery status |
-| `media-play` | media-playback-start | Play button |
-| `media-pause` | media-playback-pause | Pause button |
-| `media-stop` | media-playback-stop | Stop button |
-| `media-next` | media-skip-forward | Next track |
-| `media-previous` | media-skip-backward | Previous track |
+nudge-osd --volume-down [amount]
+          --volume-up
+          --volume-mute
+          --brightness-up
+          --brightness-down
+```
 
 # Licensing
 
