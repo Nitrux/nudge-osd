@@ -1,0 +1,5 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/OSD">
+    <file alias="Main.qml">qml/main.qml</file>
+</qresource>
+</RCC>
