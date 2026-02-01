@@ -25,6 +25,7 @@ wayland
 kf6-coreaddons (>= 6.20.0)
 wireplumber
 brightnessctl
+nerd-font-symbols
 ```
 
 ## Usage
