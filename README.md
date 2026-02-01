@@ -33,9 +33,9 @@ brightnessctl
 nudge-osd                           Daemon mode. Uses system icons.
           --emoji                   Daemon mode. Uses Nerd Font glyphs.
 
-nudge-osd --volume-down             Adjust volume (up, down or mute) in steps.
+nudge-osd --volume-down             Adjust volume (up or down) in steps.
           --volume-up
-          --volume-mute
+          --volume-mute             Mutes volume.
           --brightness-up           Adjust brightness (up or down) in steps.
           --brightness-down
 ```
