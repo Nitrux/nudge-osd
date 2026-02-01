@@ -107,7 +107,7 @@ Window {
                     width: 20
                     height: 20
                     source: controller.icon
-                    color: "#ffffff"
+                    color: Maui.Theme.textColor
                     isMask: true
                     visible: !controller.useNerdFont
                 }
@@ -117,7 +117,7 @@ Window {
                     anchors.centerIn: parent
                     font.family: "Symbols Nerd Font"
                     font.pixelSize: 18
-                    color: "#ffffff"
+                    color: Maui.Theme.textColor
                     visible: controller.useNerdFont
                     text: {
                         var iconName = controller.icon
@@ -145,23 +145,23 @@ Window {
             // Percentage text
             Label {
                 id: percentLabel
-                width: 50
+                width: 32
                 anchors.right: parent.right
-                anchors.rightMargin: 8
+                anchors.rightMargin: 5
                 anchors.verticalCenter: parent.verticalCenter
                 horizontalAlignment: Text.AlignRight
                 font.pixelSize: 13
                 font.weight: Font.Medium
-                color: root.textColor
+                color: Maui.Theme.textColor
                 text: Math.round(controller.value) + "%"
             }
 
             // Progress bar container
             Item {
-                anchors.left: iconCircle.right
-                anchors.leftMargin: 12
-                anchors.right: percentLabel.left
-                anchors.rightMargin: 8
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: iconCircle.width + iconCircle.anchors.leftMargin + 12
+                anchors.rightMargin: percentLabel.width + percentLabel.anchors.rightMargin + 12
                 height: parent.height
                 anchors.verticalCenter: parent.verticalCenter
 

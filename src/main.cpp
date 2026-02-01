@@ -63,30 +63,32 @@ int main(int argc, char *argv[]) {
 
         if (parser.isSet(volumeUpOption)) {
             int amount = parser.value(volumeUpOption).isEmpty() ? 5 : parser.value(volumeUpOption).toInt();
-            QProcess::execute("wpctl", {"set-volume", "@DEFAULT_AUDIO_SINK@", QString::number(amount) + "%+"});
+            QProcess::execute("wpctl", {"set-volume", "-l", "1.0", "@DEFAULT_AUDIO_SINK@", QString::number(amount) + "%+"});
             QProcess wpctl;
             wpctl.start("wpctl", {"get-volume", "@DEFAULT_AUDIO_SINK@"});
             wpctl.waitForFinished();
             QString output = wpctl.readAllStandardOutput().trimmed();
             double volume = output.split(' ').value(1).toDouble() * 100.0;
-            iface.call("update", "volume", volume);
+            iface.call("update", "volume", qMin(volume, 100.0));
         } else if (parser.isSet(volumeDownOption)) {
             int amount = parser.value(volumeDownOption).isEmpty() ? 5 : parser.value(volumeDownOption).toInt();
-            QProcess::execute("wpctl", {"set-volume", "@DEFAULT_AUDIO_SINK@", QString::number(amount) + "%-"});
+            QProcess::execute("wpctl", {"set-volume", "-l", "1.0", "@DEFAULT_AUDIO_SINK@", QString::number(amount) + "%-"});
             QProcess wpctl;
             wpctl.start("wpctl", {"get-volume", "@DEFAULT_AUDIO_SINK@"});
             wpctl.waitForFinished();
             QString output = wpctl.readAllStandardOutput().trimmed();
             double volume = output.split(' ').value(1).toDouble() * 100.0;
-            iface.call("update", "volume", volume);
+            iface.call("update", "volume", qMin(volume, 100.0));
         } else if (parser.isSet(volumeMuteOption)) {
             QProcess::execute("wpctl", {"set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"});
+            // After toggling mute, ensure volume is capped at 100%
+            QProcess::execute("wpctl", {"set-volume", "-l", "1.0", "@DEFAULT_AUDIO_SINK@", "100%"});
             QProcess wpctl;
             wpctl.start("wpctl", {"get-volume", "@DEFAULT_AUDIO_SINK@"});
             wpctl.waitForFinished();
             QString output = wpctl.readAllStandardOutput().trimmed();
             double volume = output.split(' ').value(1).toDouble() * 100.0;
-            iface.call("update", "volume", volume);
+            iface.call("update", "volume", qMin(volume, 100.0));
         } else if (parser.isSet(brightnessUpOption)) {
             int amount = parser.value(brightnessUpOption).isEmpty() ? 10 : parser.value(brightnessUpOption).toInt();
             QProcess::execute("brightnessctl", {"set", QString::number(amount) + "%+"});

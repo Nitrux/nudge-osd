@@ -2,7 +2,7 @@
 
 A QML-based on-screen display for keyboard shortcuts and system notifications designed for Wayland compositors.
 
-![NudgeOSD](https://nxos.org/wp-content/uploads/2026/01/screenshot-20260131-120609.png)
+![NudgeOSD](https://nxos.org/wp-content/uploads/2026/02/screenshot-20260201-013504.png)
 > NudgeOSD, a QML-based on-screen display. Built with **[MauiKit](https://mauikit.org/)** and LayerShell-Qt.
 
 ## Features
