@@ -151,7 +151,7 @@ Window {
                 anchors.verticalCenter: parent.verticalCenter
                 horizontalAlignment: Text.AlignRight
                 font.pixelSize: 13
-                font.weight: Font.Medium
+                font.weight: Font.Bold
                 color: Maui.Theme.textColor
                 text: controller.muted ? qsTr("Muted") : Math.round(controller.value) + "%"
             }
