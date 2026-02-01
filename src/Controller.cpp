@@ -6,55 +6,62 @@
 Controller::Controller(QObject *parent)
     : QObject(parent)
 {
-    // DBus registration will be done later via registerDBusService()
 }
 
 void Controller::registerDBusService()
 {
-    // Register the object on the Session Bus
     QDBusConnection bus = QDBusConnection::sessionBus();
 
     if (!bus.registerService("org.nxos.NudgeOSD")) {
         qCritical() << "Failed to register DBus service:" << bus.lastError().message();
+        return;
     }
 
     if (!bus.registerObject("/Controller", this, QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals)) {
         qCritical() << "Failed to register DBus object:" << bus.lastError().message();
+        return;
     }
 
     qDebug() << "DBus service registered: org.nxos.NudgeOSD";
-    qDebug() << "DBus object path: /Controller";
 }
 
 void Controller::update(const QString &type, double percent)
 {
-    qDebug() << "UPDATE called: type =" << type << ", percent =" << percent;
-
-    // Clamp the percentage between 0 and 100
-    double clampedValue = qBound(0.0, percent, 100.0);
-
-    if (m_value != clampedValue) {
-        m_value = clampedValue;
-        qDebug() << "Value changed to:" << m_value;
+    bool hasValueChanged = (m_value != percent);
+    if (hasValueChanged) {
+        m_value = percent;
         emit valueChanged();
     }
 
-    // Map type to appropriate icon
-    QString newIcon = mapTypeToIcon(type, clampedValue);
-    if (m_icon != newIcon) {
+    // Update muted state
+    bool isMuted = (type == "audio-volume-muted");
+    bool hasMutedChanged = (m_muted != isMuted);
+    if (hasMutedChanged) {
+        m_muted = isMuted;
+        emit mutedChanged();
+    }
+
+    // Use clamped value for icon selection to avoid invalid icon states
+    QString newIcon = mapTypeToIcon(type, qMin(percent, 100.0));
+    bool hasIconChanged = (m_icon != newIcon);
+    if (hasIconChanged) {
         m_icon = newIcon;
-        qDebug() << "Icon changed to:" << m_icon;
         emit iconChanged();
     }
 
-    // Trigger the 'show' logic in QML
-    qDebug() << "Emitting nudgeTriggered signal";
-    emit nudgeTriggered();
+    // Only trigger OSD if there's an actual change to display
+    if (hasValueChanged || hasIconChanged || hasMutedChanged) {
+        emit nudgeTriggered();
+    }
 }
 
 QString Controller::mapTypeToIcon(const QString &type, double value) const
 {
     // Volume icons
+    if (type == "audio-volume-muted") {
+        return "audio-volume-muted";
+    }
+
     if (type == "volume" || type == "audio-volume") {
         if (value == 0.0)
             return "audio-volume-muted";

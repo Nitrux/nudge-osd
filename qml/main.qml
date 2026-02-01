@@ -96,7 +96,7 @@ Window {
                 width: 36
                 height: 36
                 radius: 18
-                color: root.highlightColor
+                color: controller.muted ? palette.mid : root.highlightColor
                 anchors.left: parent.left
                 anchors.leftMargin: 5
                 anchors.verticalCenter: parent.verticalCenter
@@ -121,8 +121,8 @@ Window {
                     visible: controller.useNerdFont
                     text: {
                         var iconName = controller.icon
-                        // Nerd Font glyphs
-                        if (iconName.indexOf("audio-volume-muted") >= 0) return "\uf6a9"  //
+                        // Nerd Font glyphs (Font Awesome icons)
+                        if (iconName.indexOf("audio-volume-muted") >= 0) return "\uf026"  //
                         if (iconName.indexOf("audio-volume-low") >= 0) return "\uf027"   //
                         if (iconName.indexOf("audio-volume-medium") >= 0) return "\uf027" //
                         if (iconName.indexOf("audio-volume-high") >= 0) return "\uf028"  //
@@ -142,10 +142,10 @@ Window {
                 }
             }
 
-            // Percentage text
+            // Percentage text or "Muted" label
             Label {
                 id: percentLabel
-                width: 32
+                width: controller.muted ? 60 : 32
                 anchors.right: parent.right
                 anchors.rightMargin: 5
                 anchors.verticalCenter: parent.verticalCenter
@@ -153,7 +153,7 @@ Window {
                 font.pixelSize: 13
                 font.weight: Font.Medium
                 color: Maui.Theme.textColor
-                text: Math.round(controller.value) + "%"
+                text: controller.muted ? qsTr("Muted") : Math.round(controller.value) + "%"
             }
 
             // Progress bar container
@@ -176,10 +176,10 @@ Window {
 
                     // Progress bar fill
                     Rectangle {
-                        width: parent.width * (controller.value / 100.0)
+                        width: parent.width * (Math.min(controller.value, 100.0) / 100.0)
                         height: parent.height
                         radius: parent.radius
-                        color: root.highlightColor
+                        color: controller.muted ? palette.mid : root.highlightColor
 
                         Behavior on width {
                             NumberAnimation {

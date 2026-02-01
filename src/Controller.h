@@ -7,22 +7,25 @@ class Controller : public QObject {
     Q_PROPERTY(double value READ value NOTIFY valueChanged)
     Q_PROPERTY(QString icon READ icon NOTIFY iconChanged)
     Q_PROPERTY(bool useNerdFont READ useNerdFont CONSTANT)
+    Q_PROPERTY(bool muted READ muted NOTIFY mutedChanged)
 
 public:
     explicit Controller(QObject *parent = nullptr);
+
     double value() const { return m_value; }
     QString icon() const { return m_icon; }
     bool useNerdFont() const { return m_useNerdFont; }
+    bool muted() const { return m_muted; }
     void setUseNerdFont(bool use) { m_useNerdFont = use; }
     void registerDBusService();
 
 public slots:
-    // This will be called via DBus
     void update(const QString &type, double percent);
 
 signals:
     void valueChanged();
     void iconChanged();
+    void mutedChanged();
     void nudgeTriggered();
 
 private:
@@ -30,5 +33,6 @@ private:
 
     double m_value = 0.0;
     QString m_icon = "audio-volume-medium";
-    bool m_useNerdFont = false;  // Default to system icons
+    bool m_useNerdFont = false;
+    bool m_muted = false;
 };
