@@ -19,7 +19,7 @@ A QML-based on-screen display for keyboard shortcuts and system notifications de
 ### Runtime Requirements
 
 ```
-mauikit (>= 4.0.2)
+mauikit (>= 4.0.3)
 qt6 (>= 6.9.2)
 wayland
 kf6-coreaddons (>= 6.20.0)
