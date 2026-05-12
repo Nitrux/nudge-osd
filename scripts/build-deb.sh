@@ -22,7 +22,14 @@ cd "$BUILD_WORK_DIR"
 
 # -- Configure build.
 
-meson setup .build --prefix=/usr --buildtype=release -Dcpp_args='-march=x86-64-v3'
+DEB_ARCH="$(dpkg --print-architecture)"
+MESON_ARGS=(--prefix=/usr --buildtype=release)
+
+if [ "$DEB_ARCH" = "amd64" ]; then
+    MESON_ARGS+=("-Dcpp_args=-march=x86-64-v3")
+fi
+
+meson setup .build "${MESON_ARGS[@]}"
 
 
 # -- Compile source.
@@ -48,7 +55,7 @@ mkdir -p "$DESTDIR/DEBIAN"
 PKGNAME="nudge-osd"
 VERSION="${PACKAGE_VERSION:-0.0.1}"
 MAINTAINER="uri_herrera@nxos.org"
-ARCHITECTURE="$(dpkg --print-architecture)"
+ARCHITECTURE="$DEB_ARCH"
 DESCRIPTION="QML-based on-screen display. Built with MauiKit and LayerShell-Qt."
 
 cat > "$DESTDIR/DEBIAN/control" <<EOF
