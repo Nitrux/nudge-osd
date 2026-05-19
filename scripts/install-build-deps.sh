@@ -21,7 +21,7 @@ fi
 # -- Install build packages.
 
 $APT_COMMAND update -q
-$APT_COMMAND install -y - --no-install-recommends \
+$APT_COMMAND install -y --no-install-recommends \
     build-essential \
     cmake \
     curl \
@@ -54,5 +54,5 @@ Enabled: yes
 EOF
 
 $APT_COMMAND update -q
-$APT_COMMAND install -y - --no-install-recommends \
+$APT_COMMAND install -y --no-install-recommends \
     mauikit
