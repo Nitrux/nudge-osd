@@ -7,7 +7,11 @@
 #include <QProcess>
 #include <QDBusInterface>
 #include <QDBusConnection>
+#include <QMargins>
+#include <QScreen>
+#include <QWindow>
 #include <MauiKit4/Core/mauiapp.h>
+#include <LayerShellQt/Window>
 #include "Controller.h"
 
 // Helper function to get current volume from wpctl
@@ -40,6 +44,43 @@ static double getCurrentBrightness() {
     double max = brightnessctl.readAllStandardOutput().trimmed().toDouble();
 
     return (current / max) * 100.0;
+}
+
+static void configureLayerShellWindow(QWindow *window)
+{
+    if (!window) {
+        return;
+    }
+
+    auto *layerShellWindow = LayerShellQt::Window::get(window);
+    if (!layerShellWindow) {
+        return;
+    }
+
+    const int windowWidth = window->width() > 0 ? window->width() : 300;
+    const int windowHeight = window->height() > 0 ? window->height() : 70;
+
+    int leftMargin = 0;
+    if (const QScreen *screen = window->screen()) {
+        leftMargin = qMax(0, (screen->geometry().width() - windowWidth) / 2);
+    }
+
+    bool hasCustomBottomOffset = false;
+    const int customBottomOffset = qEnvironmentVariableIntValue("NUDGE_OSD_BOTTOM_OFFSET", &hasCustomBottomOffset);
+    const int defaultBottomOffset = qMax(0, 180 - windowHeight);
+    const int bottomOffset = hasCustomBottomOffset ? qMax(0, customBottomOffset) : defaultBottomOffset;
+
+    layerShellWindow->setLayer(LayerShellQt::Window::LayerOverlay);
+    layerShellWindow->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
+    layerShellWindow->setExclusiveZone(0);
+
+    LayerShellQt::Window::Anchors anchors;
+    anchors |= LayerShellQt::Window::AnchorLeft;
+    anchors |= LayerShellQt::Window::AnchorBottom;
+    layerShellWindow->setAnchors(anchors);
+
+    layerShellWindow->setMargins(QMargins(leftMargin, 0, 0, bottomOffset));
+    layerShellWindow->setDesiredSize(QSize(windowWidth, windowHeight));
 }
 
 int main(int argc, char *argv[]) {
@@ -138,6 +179,14 @@ int main(int argc, char *argv[]) {
             if (!obj && url == objUrl) {
                 QCoreApplication::exit(-1);
             } else if (obj && url == objUrl) {
+                if (auto *window = qobject_cast<QWindow *>(obj)) {
+                    configureLayerShellWindow(window);
+
+                    QObject::connect(window, &QWindow::screenChanged, window, [window](QScreen *) {
+                        configureLayerShellWindow(window);
+                    });
+                }
+
                 QTimer::singleShot(0, &controller, &Controller::registerDBusService);
             }
         }, Qt::QueuedConnection);

@@ -8,7 +8,7 @@ import org.mauikit.controls as Maui
 Window {
     id: root
     width: 300
-    height: 60
+    height: 70
     visible: false
     color: "#00000000"
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
