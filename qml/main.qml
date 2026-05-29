@@ -21,17 +21,11 @@ Window {
     x: (Screen.width - width) / 2
     y: Screen.height * 0.75
 
-    // System palette for KDE color scheme integration
-    SystemPalette {
-        id: palette
-        colorGroup: SystemPalette.Active
-    }
-
     // Use KDE/Qt color scheme
-    readonly property color backgroundColor: palette.window
-    readonly property color highlightColor: palette.highlight
-    readonly property color textColor: palette.windowText
-    readonly property color dimTextColor: palette.mid
+    readonly property color backgroundColor: Maui.Theme.alternateBackgroundColor
+    readonly property color highlightColor: Maui.Theme.highlightColor
+    readonly property color textColor: Maui.Theme.textColor
+    readonly property color dimTextColor: Maui.Theme.disabledTextColor
     readonly property color iconContrastColor: Maui.Theme.highlightedTextColor
 
     readonly property color shadowColorStrong: Qt.rgba(0.0, 0.0, 0.0, 0.18)
@@ -132,7 +126,7 @@ Window {
                 width: 36
                 height: 36
                 radius: 18
-                color: controller.muted ? palette.mid : root.highlightColor
+                color: controller.muted ? Maui.Theme.backgroundColor : root.highlightColor
                 anchors.left: parent.left
                 anchors.leftMargin: 5
                 anchors.verticalCenter: parent.verticalCenter
@@ -178,18 +172,25 @@ Window {
                 }
             }
 
-            // Percentage text or "Muted" label
-            Label {
-                id: percentLabel
-                width: controller.muted ? 60 : 32
+            // Volume badge (Valenz WorkspaceBadge-style chip)
+            ToolButton {
+                id: percentBadge
                 anchors.right: parent.right
                 anchors.rightMargin: 5
                 anchors.verticalCenter: parent.verticalCenter
-                horizontalAlignment: Text.AlignRight
-                font.pixelSize: 13
-                font.weight: Font.Bold
-                color: Maui.Theme.textColor
+
                 text: controller.muted ? qsTr("Muted") : Math.round(controller.value) + "%"
+                display: ToolButton.TextOnly
+                font.bold: true
+                font.pointSize: Maui.Style.fontSizes.small
+                padding: Maui.Style.space.tiny
+
+                onClicked: {}
+
+                background: Rectangle {
+                    color: Maui.Theme.backgroundColor
+                    radius: Maui.Style.radiusV
+                }
             }
 
             // Progress bar container
@@ -197,31 +198,23 @@ Window {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.leftMargin: iconCircle.width + iconCircle.anchors.leftMargin + 12
-                anchors.rightMargin: percentLabel.width + percentLabel.anchors.rightMargin + 12
+                anchors.rightMargin: percentBadge.width + percentBadge.anchors.rightMargin + 12
                 height: parent.height
                 anchors.verticalCenter: parent.verticalCenter
 
-                // Progress bar background
-                Rectangle {
-                    id: progressBg
+                Slider {
+                    id: volumeProgress
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width
-                    height: 6
-                    radius: 3
-                    color: Qt.darker(root.backgroundColor, 1.3)
+                    from: 0
+                    to: 100
+                    value: Math.min(controller.value, 100.0)
+                    Maui.Theme.highlightColor: controller.muted ? Maui.Theme.disabledTextColor : root.highlightColor
 
-                    // Progress bar fill
-                    Rectangle {
-                        width: parent.width * (Math.min(controller.value, 100.0) / 100.0)
-                        height: parent.height
-                        radius: parent.radius
-                        color: controller.muted ? palette.mid : root.highlightColor
-
-                        Behavior on width {
-                            NumberAnimation {
-                                duration: 150
-                                easing.type: Easing.OutQuad
-                            }
+                    Behavior on value {
+                        NumberAnimation {
+                            duration: 150
+                            easing.type: Easing.OutQuad
                         }
                     }
                 }
