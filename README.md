@@ -14,18 +14,24 @@ A QML-based on-screen display for keyboard shortcuts and system notifications de
 
 ## Requirements
 
-- Nitrux 5.0.0 and newer.
+- Nitrux 6.1.0 and newer.
 
 ### Runtime Requirements
 
 ```
 mauikit (>= 4.0.3)
-qt6 (>= 6.9.2)
+qt6 (>= 6.9)
 wayland
-kf6-coreaddons (>= 6.20.0)
+kf6-coreaddons (>= 6.13.0)
 wireplumber
 brightnessctl
-nerd-font-symbols
+layershellqt / layershellqtinterface
+```
+
+### Optional Runtime Requirements
+
+```
+nerd-font-symbols (only for `--emoji` / `--nerd-font`)
 ```
 
 ## Usage
