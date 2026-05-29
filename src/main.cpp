@@ -57,6 +57,11 @@ static void configureLayerShellWindow(QWindow *window)
         return;
     }
 
+    const QString layerScope = qEnvironmentVariableIsSet("NUDGE_OSD_LAYER_NAMESPACE")
+        ? QString::fromLocal8Bit(qgetenv("NUDGE_OSD_LAYER_NAMESPACE"))
+        : QStringLiteral("nudge-osd");
+    layerShellWindow->setScope(layerScope);
+
     const int windowWidth = window->width() > 0 ? window->width() : 300;
     const int windowHeight = window->height() > 0 ? window->height() : 70;
 
@@ -67,7 +72,9 @@ static void configureLayerShellWindow(QWindow *window)
 
     bool hasCustomBottomOffset = false;
     const int customBottomOffset = qEnvironmentVariableIntValue("NUDGE_OSD_BOTTOM_OFFSET", &hasCustomBottomOffset);
-    const int defaultBottomOffset = qMax(0, 180 - windowHeight);
+    const int contentHeight = 70;
+    const int verticalPadding = qMax(0, (windowHeight - contentHeight) / 2);
+    const int defaultBottomOffset = qMax(0, 180 - contentHeight - verticalPadding);
     const int bottomOffset = hasCustomBottomOffset ? qMax(0, customBottomOffset) : defaultBottomOffset;
 
     layerShellWindow->setLayer(LayerShellQt::Window::LayerOverlay);

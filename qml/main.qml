@@ -7,8 +7,12 @@ import org.mauikit.controls as Maui
 
 Window {
     id: root
-    width: 300
-    height: 70
+    readonly property int osdWidth: 300
+    readonly property int osdHeight: 70
+    readonly property int shadowPad: 14
+
+    width: osdWidth + shadowPad * 2
+    height: osdHeight + shadowPad * 2
     visible: false
     color: "#00000000"
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
@@ -28,6 +32,10 @@ Window {
     readonly property color highlightColor: palette.highlight
     readonly property color textColor: palette.windowText
     readonly property color dimTextColor: palette.mid
+
+    readonly property color shadowColorStrong: Qt.rgba(0.0, 0.0, 0.0, 0.18)
+    readonly property color shadowColorMid: Qt.rgba(0.0, 0.0, 0.0, 0.11)
+    readonly property color shadowColorSoft: Qt.rgba(0.0, 0.0, 0.0, 0.07)
 
     // Auto-hide timer
     Timer {
@@ -76,8 +84,8 @@ Window {
     Rectangle {
         id: container
         anchors.centerIn: parent
-        width: parent.width - 10
-        height: parent.height - 10
+        width: root.osdWidth
+        height: root.osdHeight
         radius: height / 2  // Perfect pill shape
         color: root.backgroundColor
         opacity: 0.0
@@ -86,6 +94,33 @@ Window {
         border.color: Qt.lighter(root.backgroundColor, 1.3)
 
         layer.enabled: false
+
+        Rectangle {
+            anchors.centerIn: parent
+            width: parent.width + 2
+            height: parent.height + 2
+            radius: height / 2
+            color: Qt.rgba(0.0, 0.0, 0.0, 0.16)
+            z: -1
+        }
+
+        Rectangle {
+            anchors.centerIn: parent
+            width: parent.width + 4
+            height: parent.height + 4
+            radius: height / 2
+            color: Qt.rgba(0.0, 0.0, 0.0, 0.10)
+            z: -2
+        }
+
+        Rectangle {
+            anchors.centerIn: parent
+            width: parent.width + 6
+            height: parent.height + 6
+            radius: height / 2
+            color: Qt.rgba(0.0, 0.0, 0.0, 0.06)
+            z: -3
+        }
 
         Item {
             anchors.fill: parent
