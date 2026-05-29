@@ -7,12 +7,11 @@ import org.mauikit.controls as Maui
 
 Window {
     id: root
-    readonly property int osdWidth: 300
-    readonly property int osdHeight: 70
-    readonly property int shadowPad: 14
+    readonly property int osdWidth: 292
+    readonly property int osdHeight: 66
 
-    width: osdWidth + shadowPad * 2
-    height: osdHeight + shadowPad * 2
+    width: osdWidth
+    height: osdHeight
     visible: false
     color: "#00000000"
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
@@ -27,11 +26,6 @@ Window {
     readonly property color textColor: Maui.Theme.textColor
     readonly property color dimTextColor: Maui.Theme.disabledTextColor
     readonly property color iconContrastColor: Maui.Theme.highlightedTextColor
-
-    readonly property color shadowColorStrong: Qt.rgba(0.0, 0.0, 0.0, 0.18)
-    readonly property color shadowColorMid: Qt.rgba(0.0, 0.0, 0.0, 0.11)
-    readonly property color shadowColorSoft: Qt.rgba(0.0, 0.0, 0.0, 0.07)
-
     // Auto-hide timer
     Timer {
         id: hideTimer
@@ -86,37 +80,9 @@ Window {
         opacity: 0.0
 
         border.width: 1
-        border.color: Qt.lighter(root.backgroundColor, 1.3)
+        border.color: Qt.rgba(root.backgroundColor.r, root.backgroundColor.g, root.backgroundColor.b, 0.55)
 
         layer.enabled: false
-
-        Rectangle {
-            anchors.centerIn: parent
-            width: parent.width + 2
-            height: parent.height + 2
-            radius: height / 2
-            color: Qt.rgba(0.0, 0.0, 0.0, 0.16)
-            z: -1
-        }
-
-        Rectangle {
-            anchors.centerIn: parent
-            width: parent.width + 4
-            height: parent.height + 4
-            radius: height / 2
-            color: Qt.rgba(0.0, 0.0, 0.0, 0.10)
-            z: -2
-        }
-
-        Rectangle {
-            anchors.centerIn: parent
-            width: parent.width + 6
-            height: parent.height + 6
-            radius: height / 2
-            color: Qt.rgba(0.0, 0.0, 0.0, 0.06)
-            z: -3
-        }
-
         Item {
             anchors.fill: parent
             anchors.margins: 10
@@ -159,14 +125,6 @@ Window {
                         if (iconName.indexOf("brightness-low") >= 0) return "\uf185"     //
                         if (iconName.indexOf("brightness-medium") >= 0) return "\uf185"  //
                         if (iconName.indexOf("brightness-high") >= 0) return "\uf185"    //
-                        if (iconName.indexOf("keyboard-brightness") >= 0) return "\uf11c" //
-                        if (iconName.indexOf("microphone") >= 0) return "\uf130"         //
-                        if (iconName.indexOf("battery") >= 0) return "\uf240"            //
-                        if (iconName.indexOf("media-playback-start") >= 0) return "\uf04b" //
-                        if (iconName.indexOf("media-playback-pause") >= 0) return "\uf04c" //
-                        if (iconName.indexOf("media-playback-stop") >= 0) return "\uf04d"  //
-                        if (iconName.indexOf("media-skip-forward") >= 0) return "\uf051"   //
-                        if (iconName.indexOf("media-skip-backward") >= 0) return "\uf048"  //
                         return "\uf028" // Default volume icon
                     }
                 }

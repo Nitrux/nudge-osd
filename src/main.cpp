@@ -62,8 +62,8 @@ static void configureLayerShellWindow(QWindow *window)
         : QStringLiteral("nudge-osd");
     layerShellWindow->setScope(layerScope);
 
-    const int windowWidth = window->width() > 0 ? window->width() : 300;
-    const int windowHeight = window->height() > 0 ? window->height() : 70;
+    const int windowWidth = window->width() > 0 ? window->width() : 292;
+    const int windowHeight = window->height() > 0 ? window->height() : 66;
 
     int leftMargin = 0;
     if (const QScreen *screen = window->screen()) {
@@ -72,7 +72,7 @@ static void configureLayerShellWindow(QWindow *window)
 
     bool hasCustomBottomOffset = false;
     const int customBottomOffset = qEnvironmentVariableIntValue("NUDGE_OSD_BOTTOM_OFFSET", &hasCustomBottomOffset);
-    const int contentHeight = 70;
+    const int contentHeight = 66;
     const int verticalPadding = qMax(0, (windowHeight - contentHeight) / 2);
     const int defaultBottomOffset = qMax(0, 180 - contentHeight - verticalPadding);
     const int bottomOffset = hasCustomBottomOffset ? qMax(0, customBottomOffset) : defaultBottomOffset;
