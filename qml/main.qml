@@ -201,8 +201,7 @@ Window {
                 anchors.rightMargin: percentBadge.width + percentBadge.anchors.rightMargin + 12
                 height: parent.height
                 anchors.verticalCenter: parent.verticalCenter
-
-                Slider {
+                ProgressBar {
                     id: volumeProgress
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width
