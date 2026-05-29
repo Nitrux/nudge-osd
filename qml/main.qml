@@ -32,6 +32,7 @@ Window {
     readonly property color highlightColor: palette.highlight
     readonly property color textColor: palette.windowText
     readonly property color dimTextColor: palette.mid
+    readonly property color iconContrastColor: Maui.Theme.highlightedTextColor
 
     readonly property color shadowColorStrong: Qt.rgba(0.0, 0.0, 0.0, 0.18)
     readonly property color shadowColorMid: Qt.rgba(0.0, 0.0, 0.0, 0.11)
@@ -142,7 +143,7 @@ Window {
                     width: 20
                     height: 20
                     source: controller.icon
-                    color: Maui.Theme.textColor
+                    color: root.iconContrastColor
                     isMask: true
                     visible: !controller.useNerdFont
                 }
@@ -152,7 +153,7 @@ Window {
                     anchors.centerIn: parent
                     font.family: "Symbols Nerd Font"
                     font.pixelSize: 18
-                    color: Maui.Theme.textColor
+                    color: root.iconContrastColor
                     visible: controller.useNerdFont
                     text: {
                         var iconName = controller.icon
