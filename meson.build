@@ -12,7 +12,7 @@ endif
 # Dependencies
 qt6 = import('qt6')
 dep_qt6 = dependency('qt6', version: '>=6.9', modules: ['Core', 'Gui', 'Qml', 'Quick', 'QuickControls2', 'DBus'])
-dep_maui = dependency('MauiKit4', version: '>=4.0.3')
+dep_maui = dependency('MauiKit4', version: '>=4.0.4')
 dep_kf6coreaddons = dependency('KF6CoreAddons', version: '>=6.13.0')
 
 # Try multiple names for LayerShellQt
