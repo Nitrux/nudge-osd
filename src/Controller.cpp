@@ -2,10 +2,24 @@
 #include <QDBusConnection>
 #include <QDBusError>
 #include <QDebug>
+#include <QDir>
+#include <QSettings>
+#include <QtGlobal>
 
 Controller::Controller(QObject *parent)
     : QObject(parent)
 {
+    QSettings settings(QDir::homePath() + QStringLiteral("/.config/nudge-osd/nudge-osd.conf"), QSettings::IniFormat);
+    const QString iconMode = settings.value(QStringLiteral("Appearance/iconMode"), QStringLiteral("system")).toString().trimmed().toLower();
+    m_useNerdFont = iconMode == QLatin1String("emoji");
+    m_osdWidth = qBound(160, settings.value(QStringLiteral("Appearance/width"), 292).toInt(), 800);
+    m_osdHeight = qBound(56, settings.value(QStringLiteral("Appearance/height"), 66).toInt(), 200);
+    m_bottomOffset = qBound(0, settings.value(QStringLiteral("Position/bottomOffset"), 114).toInt(), 1000);
+    m_hideTimeout = qBound(250, settings.value(QStringLiteral("Behavior/hideTimeout"), 2000).toInt(), 10000);
+    m_showAnimationDuration = qBound(0, settings.value(QStringLiteral("Behavior/showAnimationDuration"), 200).toInt(), 2000);
+    m_hideAnimationDuration = qBound(0, settings.value(QStringLiteral("Behavior/hideAnimationDuration"), 200).toInt(), 2000);
+    m_volumeStep = qBound(1, settings.value(QStringLiteral("Controls/volumeStep"), 5).toInt(), 100);
+    m_brightnessStep = qBound(1, settings.value(QStringLiteral("Controls/brightnessStep"), 10).toInt(), 100);
 }
 
 void Controller::registerDBusService()

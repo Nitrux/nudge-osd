@@ -7,8 +7,8 @@ import org.mauikit.controls as Maui
 
 Window {
     id: root
-    readonly property int osdWidth: 292
-    readonly property int osdHeight: 66
+    readonly property int osdWidth: controller.osdWidth
+    readonly property int osdHeight: controller.osdHeight
 
     width: osdWidth
     height: osdHeight
@@ -29,7 +29,7 @@ Window {
     // Auto-hide timer
     Timer {
         id: hideTimer
-        interval: 2000
+        interval: controller.hideTimeout
         repeat: false
         onTriggered: hideAnimation.start()
     }
@@ -41,7 +41,7 @@ Window {
         property: "opacity"
         from: 0.0
         to: 1.0
-        duration: 200
+        duration: controller.showAnimationDuration
         easing.type: Easing.OutQuad
         onStarted: root.visible = true
     }
@@ -53,7 +53,7 @@ Window {
         property: "opacity"
         from: 1.0
         to: 0.0
-        duration: 200
+        duration: controller.hideAnimationDuration
         easing.type: Easing.InQuad
         onFinished: root.visible = false
     }

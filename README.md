@@ -31,14 +31,13 @@ layershellqt / layershellqtinterface
 ### Optional Runtime Requirements
 
 ```
-nerd-font-symbols (only for `--emoji` / `--nerd-font`)
+nerd-font-symbols (only when `iconMode=emoji`)
 ```
 
 ## Usage
 
 ```
-nudge-osd                           Daemon mode. Uses system icons.
-          --emoji                   Daemon mode. Uses Nerd Font glyphs.
+nudge-osd                           Daemon mode. Uses the configured icon mode.
 
 nudge-osd --volume-down             Adjust volume (up or down) in steps.
           --volume-up
@@ -46,6 +45,32 @@ nudge-osd --volume-down             Adjust volume (up or down) in steps.
           --brightness-up           Adjust brightness (up or down) in steps.
           --brightness-down
 ```
+
+## Configuration
+
+NudgeOSD reads `~/.config/nudge-osd/nudge-osd.conf` when it starts.
+
+```ini
+[Appearance]
+iconMode=system
+width=292
+height=66
+
+[Position]
+bottomOffset=114
+
+[Behavior]
+hideTimeout=2000
+showAnimationDuration=200
+hideAnimationDuration=200
+
+[Controls]
+volumeStep=5
+brightnessStep=10
+```
+
+> [!NOTE]
+> `iconMode` accepts `system` or `emoji`. All values are loaded from this file when NudgeOSD starts.
 
 # Licensing
 

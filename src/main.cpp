@@ -46,7 +46,7 @@ static double getCurrentBrightness() {
     return (current / max) * 100.0;
 }
 
-static void configureLayerShellWindow(QWindow *window)
+static void configureLayerShellWindow(QWindow *window, int bottomOffset)
 {
     if (!window) {
         return;
@@ -69,13 +69,6 @@ static void configureLayerShellWindow(QWindow *window)
     if (const QScreen *screen = window->screen()) {
         leftMargin = qMax(0, (screen->geometry().width() - windowWidth) / 2);
     }
-
-    bool hasCustomBottomOffset = false;
-    const int customBottomOffset = qEnvironmentVariableIntValue("NUDGE_OSD_BOTTOM_OFFSET", &hasCustomBottomOffset);
-    const int contentHeight = 66;
-    const int verticalPadding = qMax(0, (windowHeight - contentHeight) / 2);
-    const int defaultBottomOffset = qMax(0, 180 - contentHeight - verticalPadding);
-    const int bottomOffset = hasCustomBottomOffset ? qMax(0, customBottomOffset) : defaultBottomOffset;
 
     layerShellWindow->setLayer(LayerShellQt::Window::LayerOverlay);
     layerShellWindow->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
@@ -101,26 +94,23 @@ int main(int argc, char *argv[]) {
     parser.addHelpOption();
     parser.addVersionOption();
 
-    // Icon style options
-    QCommandLineOption emojiOption(QStringList() << "emoji" << "nerd-font",
-                                    "Use Nerd Font glyphs for icons");
-    parser.addOption(emojiOption);
-
     // Volume control options
-    QCommandLineOption volumeUpOption(QStringList() << "volume-up", "Increase volume and show OSD [default: 5%]", "amount");
-    QCommandLineOption volumeDownOption(QStringList() << "volume-down", "Decrease volume and show OSD [default: 5%]", "amount");
+    QCommandLineOption volumeUpOption(QStringList() << "volume-up", "Increase volume and show OSD [default from settings]", "amount");
+    QCommandLineOption volumeDownOption(QStringList() << "volume-down", "Decrease volume and show OSD [default from settings]", "amount");
     QCommandLineOption volumeMuteOption(QStringList() << "volume-mute", "Toggle volume mute and show OSD");
     parser.addOption(volumeUpOption);
     parser.addOption(volumeDownOption);
     parser.addOption(volumeMuteOption);
 
     // Brightness control options
-    QCommandLineOption brightnessUpOption(QStringList() << "brightness-up", "Increase brightness and show OSD [default: 10%]", "amount");
-    QCommandLineOption brightnessDownOption(QStringList() << "brightness-down", "Decrease brightness and show OSD [default: 10%]", "amount");
+    QCommandLineOption brightnessUpOption(QStringList() << "brightness-up", "Increase brightness and show OSD [default from settings]", "amount");
+    QCommandLineOption brightnessDownOption(QStringList() << "brightness-down", "Decrease brightness and show OSD [default from settings]", "amount");
     parser.addOption(brightnessUpOption);
     parser.addOption(brightnessDownOption);
 
     parser.process(app);
+
+    Controller controller;
 
     // Check if this is a one-shot command
     bool isOneShot = parser.isSet(volumeUpOption) || parser.isSet(volumeDownOption) ||
@@ -136,13 +126,13 @@ int main(int argc, char *argv[]) {
         }
 
         if (parser.isSet(volumeUpOption)) {
-            int amount = parser.value(volumeUpOption).isEmpty() ? 5 : parser.value(volumeUpOption).toInt();
+            int amount = parser.value(volumeUpOption).isEmpty() ? controller.volumeStep() : parser.value(volumeUpOption).toInt();
             double currentVolume = getCurrentVolume();
             double newVolume = qMin(currentVolume + (amount / 100.0), 1.0);
             QProcess::execute("wpctl", {"set-volume", "@DEFAULT_AUDIO_SINK@", QString::number(newVolume)});
             iface.call("update", "volume", newVolume * 100.0);
         } else if (parser.isSet(volumeDownOption)) {
-            int amount = parser.value(volumeDownOption).isEmpty() ? 5 : parser.value(volumeDownOption).toInt();
+            int amount = parser.value(volumeDownOption).isEmpty() ? controller.volumeStep() : parser.value(volumeDownOption).toInt();
             double currentVolume = getCurrentVolume();
             double newVolume = qMax(currentVolume - (amount / 100.0), 0.0);
             QProcess::execute("wpctl", {"set-volume", "@DEFAULT_AUDIO_SINK@", QString::number(newVolume)});
@@ -154,11 +144,11 @@ int main(int argc, char *argv[]) {
             QString type = isMuted() ? "audio-volume-muted" : "volume";
             iface.call("update", type, volume);
         } else if (parser.isSet(brightnessUpOption)) {
-            int amount = parser.value(brightnessUpOption).isEmpty() ? 10 : parser.value(brightnessUpOption).toInt();
+            int amount = parser.value(brightnessUpOption).isEmpty() ? controller.brightnessStep() : parser.value(brightnessUpOption).toInt();
             QProcess::execute("brightnessctl", {"set", QString::number(amount) + "%+"});
             iface.call("update", "brightness", getCurrentBrightness());
         } else if (parser.isSet(brightnessDownOption)) {
-            int amount = parser.value(brightnessDownOption).isEmpty() ? 10 : parser.value(brightnessDownOption).toInt();
+            int amount = parser.value(brightnessDownOption).isEmpty() ? controller.brightnessStep() : parser.value(brightnessDownOption).toInt();
             QProcess::execute("brightnessctl", {"set", QString::number(amount) + "%-"});
             iface.call("update", "brightness", getCurrentBrightness());
         }
@@ -173,9 +163,6 @@ int main(int argc, char *argv[]) {
 
     MauiApp::instance();
 
-    Controller controller;
-    controller.setUseNerdFont(parser.isSet(emojiOption));
-
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty("controller", &controller);
 
@@ -187,10 +174,10 @@ int main(int argc, char *argv[]) {
                 QCoreApplication::exit(-1);
             } else if (obj && url == objUrl) {
                 if (auto *window = qobject_cast<QWindow *>(obj)) {
-                    configureLayerShellWindow(window);
+                    configureLayerShellWindow(window, controller.bottomOffset());
 
-                    QObject::connect(window, &QWindow::screenChanged, window, [window](QScreen *) {
-                        configureLayerShellWindow(window);
+                    QObject::connect(window, &QWindow::screenChanged, window, [window, &controller](QScreen *) {
+                        configureLayerShellWindow(window, controller.bottomOffset());
                     });
                 }
 
