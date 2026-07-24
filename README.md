@@ -54,29 +54,6 @@ amount, such as `nudge-osd --volume-up 3`, overrides it for that invocation.
 
 NudgeOSD watches `~/.config/nudge-osd/nudge-osd.conf` and applies changes while it is running.
 
-```ini
-[Appearance]
-iconMode=system
-width=292
-height=66
-
-[Position]
-bottomOffset=114
-
-[Behavior]
-hideTimeout=2000
-showAnimationDuration=200
-hideAnimationDuration=200
-
-[Controls]
-volumeStep=5
-brightnessStep=10
-```
-
-> [!NOTE]
-> `iconMode` accepts `system` or `emoji`. Normal saves and atomic file replacements are
-> detected and debounced before the new values are applied.
-
 # Licensing
 
 The license for this repository and its contents is **BSD-3-Clause**.
