@@ -27,6 +27,7 @@ $APT_COMMAND install -y --no-install-recommends \
     curl \
     git \
     libkf6coreaddons-dev \
+    libkf6i18n-dev \
     liblayershellqtinterface-dev \
     libwayland-dev \
     meson \
