@@ -23,6 +23,7 @@ mauikit (>= 4.0.3)
 qt6 (>= 6.9)
 wayland
 kf6-coreaddons (>= 6.13.0)
+kf6-i18n (>= 6.13.0)
 wireplumber
 brightnessctl
 layershellqt / layershellqtinterface
@@ -46,9 +47,12 @@ nudge-osd --volume-down             Adjust volume (up or down) in steps.
           --brightness-down
 ```
 
+The configured step is used when no amount is supplied. An optional positional
+amount, such as `nudge-osd --volume-up 3`, overrides it for that invocation.
+
 ## Configuration
 
-NudgeOSD reads `~/.config/nudge-osd/nudge-osd.conf` when it starts.
+NudgeOSD watches `~/.config/nudge-osd/nudge-osd.conf` and applies changes while it is running.
 
 ```ini
 [Appearance]
@@ -70,7 +74,8 @@ brightnessStep=10
 ```
 
 > [!NOTE]
-> `iconMode` accepts `system` or `emoji`. All values are loaded from this file when NudgeOSD starts.
+> `iconMode` accepts `system` or `emoji`. Normal saves and atomic file replacements are
+> detected and debounced before the new values are applied.
 
 # Licensing
 

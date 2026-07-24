@@ -1,18 +1,24 @@
 #pragma once
+#include <QFileSystemWatcher>
 #include <QObject>
+#include <QString>
+#include <QTimer>
 
 class Controller : public QObject {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.nxos.Controller")
     Q_PROPERTY(double value READ value NOTIFY valueChanged)
     Q_PROPERTY(QString icon READ icon NOTIFY iconChanged)
-    Q_PROPERTY(bool useNerdFont READ useNerdFont CONSTANT)
+    Q_PROPERTY(bool useNerdFont READ useNerdFont NOTIFY configurationChanged)
     Q_PROPERTY(bool muted READ muted NOTIFY mutedChanged)
-    Q_PROPERTY(int osdWidth READ osdWidth CONSTANT)
-    Q_PROPERTY(int osdHeight READ osdHeight CONSTANT)
-    Q_PROPERTY(int hideTimeout READ hideTimeout CONSTANT)
-    Q_PROPERTY(int showAnimationDuration READ showAnimationDuration CONSTANT)
-    Q_PROPERTY(int hideAnimationDuration READ hideAnimationDuration CONSTANT)
+    Q_PROPERTY(int osdWidth READ osdWidth NOTIFY configurationChanged)
+    Q_PROPERTY(int osdHeight READ osdHeight NOTIFY configurationChanged)
+    Q_PROPERTY(int bottomOffset READ bottomOffset NOTIFY configurationChanged)
+    Q_PROPERTY(int hideTimeout READ hideTimeout NOTIFY configurationChanged)
+    Q_PROPERTY(int showAnimationDuration READ showAnimationDuration NOTIFY configurationChanged)
+    Q_PROPERTY(int hideAnimationDuration READ hideAnimationDuration NOTIFY configurationChanged)
+    Q_PROPERTY(int volumeStep READ volumeStep NOTIFY configurationChanged)
+    Q_PROPERTY(int brightnessStep READ brightnessStep NOTIFY configurationChanged)
 
 public:
     explicit Controller(QObject *parent = nullptr);
@@ -39,10 +45,19 @@ signals:
     void iconChanged();
     void mutedChanged();
     void nudgeTriggered();
+    void configurationChanged();
 
 private:
+    void refreshConfigurationWatchPaths();
+    void scheduleConfigurationReload();
+    void reloadConfiguration();
     QString mapTypeToIcon(const QString &type, double value) const;
 
+    QString m_configPath;
+    QString m_configDirectoryPath;
+    QString m_configParentDirectoryPath;
+    QFileSystemWatcher m_configWatcher;
+    QTimer m_configReloadTimer;
     double m_value = 0.0;
     QString m_icon = "audio-volume-medium";
     bool m_useNerdFont = false;

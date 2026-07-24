@@ -139,8 +139,10 @@ Window {
 
                 text: controller.muted ? qsTr("Muted") : Math.round(controller.value) + "%"
                 display: ToolButton.TextOnly
-                font.bold: true
-                font.pointSize: Maui.Style.fontSizes.small
+                font: Qt.font({
+                    pointSize: Maui.Style.fontSizes.small,
+                    bold: true
+                })
                 padding: Maui.Style.space.tiny
 
                 onClicked: {}

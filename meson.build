@@ -14,6 +14,7 @@ qt6 = import('qt6')
 dep_qt6 = dependency('qt6', version: '>=6.9', modules: ['Core', 'Gui', 'Qml', 'Quick', 'QuickControls2', 'DBus'])
 dep_maui = dependency('MauiKit4', version: '>=4.0.4')
 dep_kf6coreaddons = dependency('KF6CoreAddons', version: '>=6.13.0')
+dep_kf6i18n = dependency('KF6I18n', version: '>=6.13.0', include_type: 'system')
 
 # Try multiple names for LayerShellQt
 dep_layer_shell = dependency('LayerShellQt', required: false)
@@ -44,7 +45,7 @@ sources = [
 # Executable
 executable('nudge-osd',
   sources,
-  dependencies: [dep_qt6, dep_maui, dep_layer_shell, dep_kf6coreaddons],
+  dependencies: [dep_qt6, dep_maui, dep_layer_shell, dep_kf6coreaddons, dep_kf6i18n],
   cpp_args: cpp_args,
   install: true
 )

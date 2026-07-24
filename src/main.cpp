@@ -10,6 +10,7 @@
 #include <QMargins>
 #include <QScreen>
 #include <QWindow>
+#include <KLocalizedString>
 #include <MauiKit4/Core/mauiapp.h>
 #include <LayerShellQt/Window>
 #include "Controller.h"
@@ -46,9 +47,9 @@ static double getCurrentBrightness() {
     return (current / max) * 100.0;
 }
 
-static void configureLayerShellWindow(QWindow *window, int bottomOffset)
+static void configureLayerShellWindow(QWindow *window, const Controller *controller)
 {
-    if (!window) {
+    if (!window || !controller) {
         return;
     }
 
@@ -61,29 +62,22 @@ static void configureLayerShellWindow(QWindow *window, int bottomOffset)
         ? QString::fromLocal8Bit(qgetenv("NUDGE_OSD_LAYER_NAMESPACE"))
         : QStringLiteral("nudge-osd");
     layerShellWindow->setScope(layerScope);
-
-    const int windowWidth = window->width() > 0 ? window->width() : 292;
-    const int windowHeight = window->height() > 0 ? window->height() : 66;
-
-    int leftMargin = 0;
-    if (const QScreen *screen = window->screen()) {
-        leftMargin = qMax(0, (screen->geometry().width() - windowWidth) / 2);
-    }
-
     layerShellWindow->setLayer(LayerShellQt::Window::LayerOverlay);
     layerShellWindow->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
+    layerShellWindow->setWantsToBeOnActiveScreen(true);
+    layerShellWindow->setCloseOnDismissed(false);
     layerShellWindow->setExclusiveZone(0);
 
     LayerShellQt::Window::Anchors anchors;
-    anchors |= LayerShellQt::Window::AnchorLeft;
     anchors |= LayerShellQt::Window::AnchorBottom;
     layerShellWindow->setAnchors(anchors);
-
-    layerShellWindow->setMargins(QMargins(leftMargin, 0, 0, bottomOffset));
-    layerShellWindow->setDesiredSize(QSize(windowWidth, windowHeight));
+    layerShellWindow->setMargins(QMargins(0, 0, 0, controller->bottomOffset()));
+    layerShellWindow->setDesiredSize(QSize(controller->osdWidth(), controller->osdHeight()));
 }
 
 int main(int argc, char *argv[]) {
+    KLocalizedString::setApplicationDomain("nudge-osd");
+
     QGuiApplication app(argc, argv);
     app.setApplicationName("nudge-osd");
     app.setDesktopFileName("nudge-osd");
@@ -95,22 +89,33 @@ int main(int argc, char *argv[]) {
     parser.addVersionOption();
 
     // Volume control options
-    QCommandLineOption volumeUpOption(QStringList() << "volume-up", "Increase volume and show OSD [default from settings]", "amount");
-    QCommandLineOption volumeDownOption(QStringList() << "volume-down", "Decrease volume and show OSD [default from settings]", "amount");
+    QCommandLineOption volumeUpOption(QStringList() << "volume-up", "Increase volume and show OSD [default from settings]");
+    QCommandLineOption volumeDownOption(QStringList() << "volume-down", "Decrease volume and show OSD [default from settings]");
     QCommandLineOption volumeMuteOption(QStringList() << "volume-mute", "Toggle volume mute and show OSD");
     parser.addOption(volumeUpOption);
     parser.addOption(volumeDownOption);
     parser.addOption(volumeMuteOption);
 
     // Brightness control options
-    QCommandLineOption brightnessUpOption(QStringList() << "brightness-up", "Increase brightness and show OSD [default from settings]", "amount");
-    QCommandLineOption brightnessDownOption(QStringList() << "brightness-down", "Decrease brightness and show OSD [default from settings]", "amount");
+    QCommandLineOption brightnessUpOption(QStringList() << "brightness-up", "Increase brightness and show OSD [default from settings]");
+    QCommandLineOption brightnessDownOption(QStringList() << "brightness-down", "Decrease brightness and show OSD [default from settings]");
     parser.addOption(brightnessUpOption);
     parser.addOption(brightnessDownOption);
+    parser.addPositionalArgument("amount", "Override the configured step.", "[amount]");
 
     parser.process(app);
 
     Controller controller;
+    const QString amountArgument = parser.positionalArguments().value(0);
+    const auto stepAmount = [&amountArgument](int configuredAmount) {
+        if (amountArgument.isEmpty()) {
+            return configuredAmount;
+        }
+
+        bool ok = false;
+        const int amount = amountArgument.toInt(&ok);
+        return ok ? qBound(1, amount, 100) : configuredAmount;
+    };
 
     // Check if this is a one-shot command
     bool isOneShot = parser.isSet(volumeUpOption) || parser.isSet(volumeDownOption) ||
@@ -126,13 +131,13 @@ int main(int argc, char *argv[]) {
         }
 
         if (parser.isSet(volumeUpOption)) {
-            int amount = parser.value(volumeUpOption).isEmpty() ? controller.volumeStep() : parser.value(volumeUpOption).toInt();
+            const int amount = stepAmount(controller.volumeStep());
             double currentVolume = getCurrentVolume();
             double newVolume = qMin(currentVolume + (amount / 100.0), 1.0);
             QProcess::execute("wpctl", {"set-volume", "@DEFAULT_AUDIO_SINK@", QString::number(newVolume)});
             iface.call("update", "volume", newVolume * 100.0);
         } else if (parser.isSet(volumeDownOption)) {
-            int amount = parser.value(volumeDownOption).isEmpty() ? controller.volumeStep() : parser.value(volumeDownOption).toInt();
+            const int amount = stepAmount(controller.volumeStep());
             double currentVolume = getCurrentVolume();
             double newVolume = qMax(currentVolume - (amount / 100.0), 0.0);
             QProcess::execute("wpctl", {"set-volume", "@DEFAULT_AUDIO_SINK@", QString::number(newVolume)});
@@ -144,11 +149,11 @@ int main(int argc, char *argv[]) {
             QString type = isMuted() ? "audio-volume-muted" : "volume";
             iface.call("update", type, volume);
         } else if (parser.isSet(brightnessUpOption)) {
-            int amount = parser.value(brightnessUpOption).isEmpty() ? controller.brightnessStep() : parser.value(brightnessUpOption).toInt();
+            const int amount = stepAmount(controller.brightnessStep());
             QProcess::execute("brightnessctl", {"set", QString::number(amount) + "%+"});
             iface.call("update", "brightness", getCurrentBrightness());
         } else if (parser.isSet(brightnessDownOption)) {
-            int amount = parser.value(brightnessDownOption).isEmpty() ? controller.brightnessStep() : parser.value(brightnessDownOption).toInt();
+            const int amount = stepAmount(controller.brightnessStep());
             QProcess::execute("brightnessctl", {"set", QString::number(amount) + "%-"});
             iface.call("update", "brightness", getCurrentBrightness());
         }
@@ -174,11 +179,31 @@ int main(int argc, char *argv[]) {
                 QCoreApplication::exit(-1);
             } else if (obj && url == objUrl) {
                 if (auto *window = qobject_cast<QWindow *>(obj)) {
-                    configureLayerShellWindow(window, controller.bottomOffset());
+                    const auto reconfigureWindow = [window, &controller] {
+                        configureLayerShellWindow(window, &controller);
+                    };
+                    reconfigureWindow();
 
-                    QObject::connect(window, &QWindow::screenChanged, window, [window, &controller](QScreen *) {
-                        configureLayerShellWindow(window, controller.bottomOffset());
-                    });
+                    QObject::connect(window,
+                                     &QWindow::widthChanged,
+                                     window,
+                                     [reconfigureWindow](int) { reconfigureWindow(); });
+                    QObject::connect(window,
+                                     &QWindow::heightChanged,
+                                     window,
+                                     [reconfigureWindow](int) { reconfigureWindow(); });
+                    QObject::connect(window,
+                                     &QWindow::visibleChanged,
+                                     window,
+                                     [reconfigureWindow](bool) { reconfigureWindow(); });
+                    QObject::connect(window,
+                                     &QWindow::screenChanged,
+                                     window,
+                                     [reconfigureWindow](QScreen *) { reconfigureWindow(); });
+                    QObject::connect(&controller,
+                                     &Controller::configurationChanged,
+                                     window,
+                                     reconfigureWindow);
                 }
 
                 QTimer::singleShot(0, &controller, &Controller::registerDBusService);
