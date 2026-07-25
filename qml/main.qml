@@ -139,7 +139,6 @@ Window {
 
                 text: controller.muted ? qsTr("Muted") : Math.round(controller.value) + "%"
                 display: ToolButton.TextOnly
-                font.pixelSize: Maui.Style.fontSizes.small
                 font.bold: true
                 padding: Maui.Style.space.tiny
 
