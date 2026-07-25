@@ -139,10 +139,8 @@ Window {
 
                 text: controller.muted ? qsTr("Muted") : Math.round(controller.value) + "%"
                 display: ToolButton.TextOnly
-                font: Qt.font({
-                    pointSize: Maui.Style.fontSizes.small,
-                    bold: true
-                })
+                font.pixelSize: Maui.Style.fontSizes.small
+                font.bold: true
                 padding: Maui.Style.space.tiny
 
                 onClicked: {}
@@ -168,7 +166,7 @@ Window {
                     from: 0
                     to: 100
                     value: Math.min(controller.value, 100.0)
-                    Maui.Theme.highlightColor: controller.muted ? Maui.Theme.disabledTextColor : root.highlightColor
+                    Maui.Theme.highlightColor: controller.muted ? root.dimTextColor : root.highlightColor
 
                     Behavior on value {
                         NumberAnimation {
