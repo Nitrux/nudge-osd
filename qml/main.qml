@@ -103,7 +103,7 @@ Window {
                     width: 20
                     height: 20
                     source: controller.icon
-                    color: root.iconContrastColor
+                    color: controller.muted ? root.dimTextColor : root.iconContrastColor
                     isMask: true
                     visible: !controller.useNerdFont
                 }
@@ -113,7 +113,7 @@ Window {
                     anchors.centerIn: parent
                     font.family: "Symbols Nerd Font"
                     font.pixelSize: 18
-                    color: root.iconContrastColor
+                    color: controller.muted ? root.dimTextColor : root.iconContrastColor
                     visible: controller.useNerdFont
                     text: {
                         var iconName = controller.icon
@@ -135,6 +135,7 @@ Window {
                 id: percentBadge
                 anchors.right: parent.right
                 anchors.rightMargin: 5
+                width: Maui.Style.units.gridUnit * 4
                 anchors.verticalCenter: parent.verticalCenter
 
                 text: controller.muted ? qsTr("Muted") : Math.round(controller.value) + "%"
@@ -165,7 +166,23 @@ Window {
                     from: 0
                     to: 100
                     value: Math.min(controller.value, 100.0)
-                    Maui.Theme.highlightColor: controller.muted ? root.dimTextColor : root.highlightColor
+                    background: Rectangle
+                    {
+                        implicitHeight: 10
+                        radius: height / 2
+                        color: Maui.Theme.backgroundColor
+                    }
+                    contentItem: Item
+                    {
+                        implicitHeight: 10
+                        Rectangle
+                        {
+                            width: volumeProgress.position * parent.width
+                            height: parent.height
+                            radius: height / 2
+                            color: controller.muted ? root.dimTextColor : root.highlightColor
+                        }
+                    }
 
                     Behavior on value {
                         NumberAnimation {
