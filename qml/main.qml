@@ -76,11 +76,11 @@ Window {
         width: root.osdWidth
         height: root.osdHeight
         radius: height / 2  // Perfect pill shape
-        color: root.backgroundColor
+        color: Qt.alpha(root.backgroundColor, 0.76)
         opacity: 0.0
 
         border.width: 1
-        border.color: Qt.rgba(root.backgroundColor.r, root.backgroundColor.g, root.backgroundColor.b, 0.55)
+        border.color: Qt.alpha(Maui.Theme.textColor, 0.10)
 
         layer.enabled: false
         Item {
