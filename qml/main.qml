@@ -104,7 +104,6 @@ Window {
                     height: 20
                     source: controller.icon
                     color: controller.muted ? root.dimTextColor : root.iconContrastColor
-                    isMask: true
                     visible: !controller.useNerdFont
                 }
 
