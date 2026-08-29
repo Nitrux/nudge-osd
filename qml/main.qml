@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Window
+import QtQuick.Effects
 import org.mauikit.controls as Maui
 
 // Access to Screen properties
@@ -25,7 +26,9 @@ Window {
     readonly property color highlightColor: Maui.Theme.highlightColor
     readonly property color textColor: Maui.Theme.textColor
     readonly property color dimTextColor: Maui.Theme.disabledTextColor
-    readonly property color iconContrastColor: Maui.Theme.highlightedTextColor
+    readonly property color iconContrastColor: Maui.ColorUtils.brightnessForColor(root.highlightColor) === Maui.ColorUtils.Light
+                                                ? "#333333"
+                                                : "#fafafa"
     // Auto-hide timer
     Timer {
         id: hideTimer
@@ -105,6 +108,11 @@ Window {
                     source: controller.icon
                     color: controller.muted ? root.dimTextColor : root.iconContrastColor
                     visible: !controller.useNerdFont
+                    layer.enabled: visible && GraphicsInfo.api !== GraphicsInfo.Software
+                    layer.effect: MultiEffect {
+                        colorization: 1
+                        colorizationColor: controller.muted ? root.dimTextColor : root.iconContrastColor
+                    }
                 }
 
                 // Nerd Font glyphs
