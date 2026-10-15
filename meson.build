@@ -12,19 +12,15 @@ endif
 # Dependencies
 qt6 = import('qt6')
 dep_qt6 = dependency('qt6', version: '>=6.9', modules: ['Core', 'Gui', 'Qml', 'Quick', 'QuickControls2', 'DBus'])
-dep_maui = dependency('MauiKit4', version: '>=4.0.4')
+dep_maui = dependency('MauiKit4', version: '>=4.0.5')
 dep_kf6coreaddons = dependency('KF6CoreAddons', version: '>=6.13.0')
-dep_kf6i18n = dependency('KF6I18n', version: '>=6.13.0', include_type: 'system')
+cpp_compiler = meson.get_compiler('cpp')
+dep_kf6i18n = declare_dependency(
+    include_directories: include_directories(get_option('prefix') / 'include' / 'KF6' / 'KI18n'),
+    dependencies: [cpp_compiler.find_library('KF6I18n'), cpp_compiler.find_library('KF6I18nQml')],
+)
 
-# Try multiple names for LayerShellQt
-dep_layer_shell = dependency('LayerShellQt', required: false)
-if not dep_layer_shell.found()
-  dep_layer_shell = dependency('LayerShellQtInterface', required: false)
-endif
-if not dep_layer_shell.found()
-  # Fallback: try to find the library directly
-  dep_layer_shell = meson.get_compiler('cpp').find_library('LayerShellQtInterface', required: false)
-endif
+dep_layer_shell = cpp_compiler.find_library('LayerShellQtInterface', required: false)
 if not dep_layer_shell.found()
   error('LayerShellQt not found. Please install liblayershellqtinterface-dev')
 endif
