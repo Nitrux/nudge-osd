@@ -30,6 +30,7 @@ $APT_COMMAND install -y --no-install-recommends \
     libkf6coreaddons-dev \
     libkf6i18n-dev \
     liblayershellqtinterface-dev \
+    libxkbcommon-dev \
     libwayland-dev \
     pkg-config \
     qt6-base-dev \
