@@ -27,9 +27,12 @@ $APT_COMMAND install -y --no-install-recommends \
     extra-cmake-modules \
     curl \
     git \
+    libkf6config-dev \
     libkf6coreaddons-dev \
     libkf6i18n-dev \
+    libkf6notifications-dev \
     liblayershellqtinterface-dev \
+    libkf6windowsystem-dev \
     libxkbcommon-dev \
     libwayland-dev \
     pkg-config \
