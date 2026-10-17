@@ -40,10 +40,10 @@ public:
     int brightnessStep() const { return m_brightnessStep; }
     void registerDBusService();
 
-public slots:
+public Q_SLOTS:
     void update(const QString &type, double percent);
 
-signals:
+Q_SIGNALS:
     void valueChanged();
     void iconChanged();
     void mutedChanged();
@@ -62,7 +62,7 @@ private:
     QFileSystemWatcher m_configWatcher;
     QTimer m_configReloadTimer;
     double m_value = 0.0;
-    QString m_icon = "audio-volume-medium";
+    QString m_icon = QStringLiteral("audio-volume-medium");
     bool m_useNerdFont = false;
     bool m_muted = false;
     int m_osdWidth = 292;

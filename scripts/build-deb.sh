@@ -6,7 +6,7 @@
 
 # -- Exit on errors.
 
-set -e
+set -euo pipefail
 
 
 # -- Prepare source.
@@ -23,18 +23,24 @@ cd "$BUILD_WORK_DIR"
 # -- Configure build.
 
 DEB_ARCH="$(dpkg --print-architecture)"
-MESON_ARGS=(--prefix=/usr --buildtype=release)
+DEB_HOST_MULTIARCH="$(dpkg-architecture -qDEB_HOST_MULTIARCH)"
+# MauiKit software MUST be built with CMake and ECM; NEVER use Meson.
+CMAKE_ARGS=(
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DKDE_INSTALL_LIBDIR="lib/$DEB_HOST_MULTIARCH"
+    -DCMAKE_BUILD_TYPE=Release
+)
 
 if [ "$DEB_ARCH" = "amd64" ]; then
-    MESON_ARGS+=("-Dcpp_args=-march=x86-64-v3")
+    CMAKE_ARGS+=(-DCMAKE_CXX_FLAGS=-march=x86-64-v3)
 fi
 
-meson setup .build "${MESON_ARGS[@]}"
+cmake -S . -B .build "${CMAKE_ARGS[@]}"
 
 
 # -- Compile source.
 
-ninja -C .build -k 0 -j "$(nproc)"
+cmake --build .build --parallel "$(nproc)"
 
 
 # -- Create a temporary DESTDIR for packaging.
@@ -45,7 +51,7 @@ rm -rf "$DESTDIR"
 
 # -- Install binary to DESTDIR.
 
-DESTDIR="$DESTDIR" ninja -C .build install
+DESTDIR="$DESTDIR" cmake --install .build
 
 
 # -- Create DEBIAN control file.
@@ -53,7 +59,7 @@ DESTDIR="$DESTDIR" ninja -C .build install
 mkdir -p "$DESTDIR/DEBIAN"
 
 PKGNAME="nudge-osd"
-VERSION="${PACKAGE_VERSION:-0.0.1}"
+VERSION="${PACKAGE_VERSION:?PACKAGE_VERSION must be supplied by CI}"
 MAINTAINER="uri_herrera@nxos.org"
 ARCHITECTURE="$DEB_ARCH"
 DESCRIPTION="QML-based on-screen display. Built with MauiKit and LayerShell-Qt."
@@ -66,7 +72,7 @@ Priority: optional
 Architecture: $ARCHITECTURE
 Maintainer: $MAINTAINER
 Description: $DESCRIPTION
-Depends: libqt6core6t64, libqt6gui6, libqt6qml6, libqt6quick6, libqt6dbus6, libqt6quickcontrols2-6, qml6-module-qtquick, qml6-module-qtquick-controls, qml6-module-qtquick-window, libkf6coreaddons6, mauikit (>= 4.0.5), qml6-module-qtquick-effects, liblayershellqtinterface6, fonts-nitrux-desktop, wireplumber, brightnessctl
+Depends: libkf6i18n6,libqt6core6t64, libqt6gui6, libqt6qml6, libqt6quick6, libqt6dbus6, libqt6quickcontrols2-6, qml6-module-qtquick, qml6-module-qtquick-controls, qml6-module-qtquick-window, libkf6coreaddons6, mauikit (>= 4.0.5), qml6-module-qtquick-effects, liblayershellqtinterface6, fonts-nitrux-desktop, wireplumber, brightnessctl
 EOF
 
 
@@ -85,4 +91,4 @@ mkdir -p "$TARGET_DIR"
 
 mv "${PKGNAME}_${VERSION}_${ARCHITECTURE}.deb" "$TARGET_DIR/"
 
-echo "Debian package created: $(pwd)/build/${PKGNAME}_${PACKAGE_VERSION}_${ARCHITECTURE}.deb"
+echo "Debian package created: $(pwd)/build/${PKGNAME}_${VERSION}_${ARCHITECTURE}.deb"

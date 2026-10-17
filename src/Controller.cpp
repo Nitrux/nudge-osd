@@ -111,7 +111,7 @@ void Controller::reloadConfiguration()
     m_hideAnimationDuration = hideAnimationDuration;
     m_volumeStep = volumeStep;
     m_brightnessStep = brightnessStep;
-    emit configurationChanged();
+    Q_EMIT configurationChanged();
 }
 
 void Controller::registerDBusService()
@@ -136,7 +136,7 @@ void Controller::update(const QString &type, double percent)
     bool hasValueChanged = (m_value != percent);
     if (hasValueChanged) {
         m_value = percent;
-        emit valueChanged();
+        Q_EMIT valueChanged();
     }
 
     // Update muted state
@@ -144,7 +144,7 @@ void Controller::update(const QString &type, double percent)
     bool hasMutedChanged = (m_muted != isMuted);
     if (hasMutedChanged) {
         m_muted = isMuted;
-        emit mutedChanged();
+        Q_EMIT mutedChanged();
     }
 
     // Use clamped value for icon selection to avoid invalid icon states
@@ -152,12 +152,12 @@ void Controller::update(const QString &type, double percent)
     bool hasIconChanged = (m_icon != newIcon);
     if (hasIconChanged) {
         m_icon = newIcon;
-        emit iconChanged();
+        Q_EMIT iconChanged();
     }
 
     // Only trigger OSD if there's an actual change to display
     if (hasValueChanged || hasIconChanged || hasMutedChanged) {
-        emit nudgeTriggered();
+        Q_EMIT nudgeTriggered();
     }
 }
 
