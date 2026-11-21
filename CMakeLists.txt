@@ -81,3 +81,11 @@ if(NOT TARGET uninstall)
 endif()
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
+
+target_precompile_headers(nudge-osd PRIVATE
+    <QDebug>
+    <QFileInfo>
+    <QGuiApplication>
+    <QQmlEngine>
+    <QQuickWindow>
+)
